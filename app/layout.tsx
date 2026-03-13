@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -11,7 +11,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Merveille Yomba | Portfolio",
   description:
-    "Portfolio de Merveille Yomba — Étudiante Ingénieure ENSEA spécialisée en traitement du signal, IA et software engineering."
+    "Portfolio de Merveille Yomba - Etudiante Ingenieure ENSEA specialisee en traitement du signal, IA et software engineering."
 };
 
 export default function RootLayout({
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body
-        className={`${inter.variable} font-sans bg-mist text-ink antialiased`}
+        className={`${inter.variable} font-sans bg-mist text-ink antialiased selection:bg-accent/30 selection:text-ink`}
       >
         {children}
       </body>

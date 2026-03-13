@@ -1,0 +1,5 @@
+﻿import { useEffect, useState } from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+-import { ArrowDownRight, Download, Github, Linkedin, Mail, Send, Sparkles, X } from "lucide-react";
++import { ArrowDownRight, Download, Github, Linkedin, Mail, Phone, Send, Sparkles, X } from "lucide-react";

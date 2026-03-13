@@ -1,5 +1,6 @@
 ﻿import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+
 import { cn } from "../lib/cn";
 
 type ProjectCardProps = {
@@ -19,21 +20,24 @@ export function ProjectCard({ title, description, tech, metric, focus, href, del
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay }}
       viewport={{ once: true, amount: 0.3 }}
-      className="group relative flex flex-col gap-4 overflow-hidden rounded-card border border-stroke bg-white/90 p-6 shadow-sm transition duration-500 hover:-translate-y-1 hover:shadow-soft"
+      className="glitch-hover group relative flex flex-col gap-4 overflow-hidden rounded-card border border-stroke/70 bg-slate-900/70 p-6 shadow-soft backdrop-blur hover:shadow-magenta"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-2">
-          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-stroke bg-mist px-3 py-1 text-xs font-semibold text-accent">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-stroke/70 bg-mist/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">
             {focus}
           </span>
-          <h3 className="text-xl font-semibold text-ink">{title}</h3>
+          <h3 className="text-xl font-semibold text-ink drop-shadow">{title}</h3>
         </div>
-        <div className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">{metric}</div>
+        <div className="rounded-full bg-accent/20 px-3 py-1 text-xs font-semibold text-accent shadow-inner">{metric}</div>
       </div>
-      <p className="text-slate-700 leading-relaxed">{description}</p>
+      <p className="text-slate-200 leading-relaxed">{description}</p>
       <div className="flex flex-wrap gap-2">
         {tech.map((item) => (
-          <span key={item} className="rounded-full border border-stroke px-3 py-1 text-xs font-medium text-slate-700">
+          <span
+            key={item}
+            className="rounded-full border border-stroke/70 bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-200"
+          >
             {item}
           </span>
         ))}
@@ -49,7 +53,7 @@ export function ProjectCard({ title, description, tech, metric, focus, href, del
           <ArrowUpRight className="h-4 w-4" />
         </a>
       ) : null}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-accent/4 via-transparent to-transparent opacity-0 transition duration-500 group-hover:opacity-100" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-neon/20 opacity-0 transition duration-500 group-hover:opacity-100" />
     </motion.article>
   );
 }

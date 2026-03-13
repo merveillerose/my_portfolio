@@ -7,7 +7,6 @@ type WaveCanvasProps = {
   className?: string;
 };
 
-// Simple 1D Perlin noise implementation for smooth amplitude modulation
 function createPerlin() {
   const permutation = new Uint8Array(512);
   for (let i = 0; i < 256; i += 1) permutation[i] = i;
@@ -32,7 +31,7 @@ function createPerlin() {
 
 export function WaveCanvas({ className }: WaveCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const noise = useRef<((x: number) => number) | null>(null);
+  const noiseRef = useRef<((x: number) => number) | null>(null);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -40,14 +39,14 @@ export function WaveCanvas({ className }: WaveCanvasProps) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    noise.current = createPerlin();
+    noiseRef.current = createPerlin();
     let animationId: number;
     let time = 0;
 
     const resize = () => {
       const parent = canvas.parentElement;
       const width = parent ? parent.clientWidth : window.innerWidth;
-      const height = 220;
+      const height = 180;
       canvas.width = width * window.devicePixelRatio;
       canvas.height = height * window.devicePixelRatio;
       canvas.style.width = `${width}px`;
@@ -61,43 +60,62 @@ export function WaveCanvas({ className }: WaveCanvasProps) {
       const height = canvas.height / window.devicePixelRatio;
       ctx.clearRect(0, 0, width, height);
 
-      // Background grid lines
-      ctx.strokeStyle = "rgba(26, 86, 160, 0.08)";
+      // Grille de fond — très subtile, cohérente avec le dark theme
+      ctx.strokeStyle = "rgba(59, 130, 246, 0.05)";
       ctx.lineWidth = 1;
-      for (let x = 0; x < width; x += 32) {
+      for (let x = 0; x < width; x += 40) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, height);
         ctx.stroke();
       }
-      for (let y = 0; y < height; y += 32) {
+      for (let y = 0; y < height; y += 40) {
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(width, y);
         ctx.stroke();
       }
 
-      const mid = height * 0.55;
-      const amplitude = 34;
-      const freq = 0.014;
-      const noiseScale = 0.08;
+      const mid = height * 0.52;
+      const amplitude = 28;
+      const freq = 0.013;
+      const noiseScale = 0.07;
 
-      ctx.beginPath();
-      for (let x = 0; x <= width; x += 6) {
-        const sine = Math.sin(x * freq + time * 0.035);
-        const n = noise.current ? noise.current(x * noiseScale + time * 0.012) : 0;
-        const y = mid + sine * amplitude + n * amplitude * 0.6;
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      const gradient = ctx.createLinearGradient(0, 0, width, 0);
-      gradient.addColorStop(0, "#1a56a0");
-      gradient.addColorStop(1, "#4f8dd7");
-      ctx.strokeStyle = gradient;
-      ctx.lineWidth = 3;
-      ctx.shadowColor = "rgba(26,86,160,0.28)";
-      ctx.shadowBlur = 18;
-      ctx.stroke();
+      // Onde principale
+      const drawWave = (
+        offsetY: number,
+        ampScale: number,
+        timeScale: number,
+        alpha: number,
+        lineWidth: number,
+        colorStart: string,
+        colorEnd: string
+      ) => {
+        ctx.beginPath();
+        for (let x = 0; x <= width; x += 4) {
+          const sine = Math.sin(x * freq + time * timeScale);
+          const n = noiseRef.current ? noiseRef.current(x * noiseScale + time * 0.01) : 0;
+          const y = mid + offsetY + sine * amplitude * ampScale + n * amplitude * 0.5 * ampScale;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        const gradient = ctx.createLinearGradient(0, 0, width, 0);
+        gradient.addColorStop(0, colorStart);
+        gradient.addColorStop(1, colorEnd);
+        ctx.strokeStyle = gradient;
+        ctx.globalAlpha = alpha;
+        ctx.lineWidth = lineWidth;
+        ctx.shadowColor = "rgba(59, 130, 246, 0.4)";
+        ctx.shadowBlur = 12;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+      };
+
+      // Onde secondaire — plus basse, plus fine, décalée
+      drawWave(18, 0.55, 0.028, 0.25, 1.5, "#1d4ed8", "#60a5fa");
+      // Onde principale — lumineuse, définie
+      drawWave(0, 1, 0.035, 0.85, 2.5, "#2563eb", "#93c5fd");
 
       time += 1;
       animationId = requestAnimationFrame(draw);
@@ -116,8 +134,17 @@ export function WaveCanvas({ className }: WaveCanvasProps) {
   }, []);
 
   return (
-    <div className={cn("relative overflow-hidden rounded-3xl border border-stroke/70 bg-white/80", className)}>
-      <div className="absolute inset-0 bg-gradient-to-br from-accent/8 via-transparent to-white" />
+    // Fond cohérent avec les cartes — #0f1628, pas blanc
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-2xl border border-white/8 bg-[#0f1628] shadow-[0_2px_24px_rgba(0,0,0,0.35)]",
+        className
+      )}
+    >
+      {/* Reflet haut */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      {/* Fondu bas pour transition douce */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#0f1628] to-transparent" />
       <canvas ref={canvasRef} className="relative block" aria-hidden="true" />
     </div>
   );
