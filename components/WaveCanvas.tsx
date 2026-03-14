@@ -60,8 +60,8 @@ export function WaveCanvas({ className }: WaveCanvasProps) {
       const height = canvas.height / window.devicePixelRatio;
       ctx.clearRect(0, 0, width, height);
 
-      // Grille de fond — très subtile, cohérente avec le dark theme
-      ctx.strokeStyle = "rgba(59, 130, 246, 0.05)";
+      const isLight = document.documentElement.getAttribute("data-theme") === "light";
+      ctx.strokeStyle = isLight ? "rgba(26, 86, 160, 0.08)" : "rgba(59, 130, 246, 0.05)";
       ctx.lineWidth = 1;
       for (let x = 0; x < width; x += 40) {
         ctx.beginPath();
@@ -81,7 +81,6 @@ export function WaveCanvas({ className }: WaveCanvasProps) {
       const freq = 0.013;
       const noiseScale = 0.07;
 
-      // Onde principale
       const drawWave = (
         offsetY: number,
         ampScale: number,
@@ -105,16 +104,14 @@ export function WaveCanvas({ className }: WaveCanvasProps) {
         ctx.strokeStyle = gradient;
         ctx.globalAlpha = alpha;
         ctx.lineWidth = lineWidth;
-        ctx.shadowColor = "rgba(59, 130, 246, 0.4)";
+        ctx.shadowColor = isLight ? "rgba(26,86,160,0.35)" : "rgba(59,130,246,0.4)";
         ctx.shadowBlur = 12;
         ctx.stroke();
         ctx.globalAlpha = 1;
         ctx.shadowBlur = 0;
       };
 
-      // Onde secondaire — plus basse, plus fine, décalée
       drawWave(18, 0.55, 0.028, 0.25, 1.5, "#1d4ed8", "#60a5fa");
-      // Onde principale — lumineuse, définie
       drawWave(0, 1, 0.035, 0.85, 2.5, "#2563eb", "#93c5fd");
 
       time += 1;
@@ -134,16 +131,13 @@ export function WaveCanvas({ className }: WaveCanvasProps) {
   }, []);
 
   return (
-    // Fond cohérent avec les cartes — #0f1628, pas blanc
     <div
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-white/8 bg-[#0f1628] shadow-[0_2px_24px_rgba(0,0,0,0.35)]",
+        "wave-shell relative overflow-hidden rounded-2xl border border-white/8 bg-[#0f1628] shadow-[0_2px_24px_rgba(0,0,0,0.35)]",
         className
       )}
     >
-      {/* Reflet haut */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-      {/* Fondu bas pour transition douce */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#0f1628] to-transparent" />
       <canvas ref={canvasRef} className="relative block" aria-hidden="true" />
     </div>

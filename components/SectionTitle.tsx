@@ -9,12 +9,8 @@ type SectionTitleProps = {
 };
 
 const fade = {
-  hidden: { opacity: 0, y: 16 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
-  },
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } }
 };
 
 export function SectionTitle({ label, title, description, align = "left" }: SectionTitleProps) {
@@ -22,30 +18,23 @@ export function SectionTitle({ label, title, description, align = "left" }: Sect
 
   return (
     <motion.div
-      className={cn("flex flex-col gap-3 w-full", alignment)}
+      className={cn("flex flex-col gap-2 w-full", alignment)}
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, amount: 0.3 }}
       variants={fade}
     >
-      {/* Label — trait + texte, minimaliste */}
       {label ? (
-        <div className={cn("flex items-center gap-3", align === "center" && "justify-center")}>
-          <span className="h-px w-6 bg-blue-500/60" />
-          <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-blue-400">
-            {label}
-          </span>
-        </div>
+        <span className="inline-flex items-center gap-2 rounded-full border border-stroke/80 bg-slate-900/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-accent [data-theme=light]:bg-white [data-theme=light]:text-accent">
+          {label}
+          <span className="h-1 w-1 rounded-full bg-accent" />
+        </span>
       ) : null}
-
-      {/* Titre — blanc pur, lisible, hiérarchie forte */}
-      <h2 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
+      <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-ink drop-shadow-sm [data-theme=light]:text-[#0f1729]">
         {title}
       </h2>
-
-      {/* Description — texte secondaire légèrement atténué */}
       {description ? (
-        <p className="max-w-2xl text-sm leading-relaxed text-slate-400 md:text-base">
+        <p className="max-w-3xl text-sm md:text-base text-slate-600 leading-relaxed [data-theme=light]:text-slate-700">
           {description}
         </p>
       ) : null}

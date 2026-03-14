@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowDownRight, Download, Github, Linkedin, Mail, Sparkles, X } from "lucide-react";
+import { ArrowDownRight, Download, Github, Linkedin, Mail, Moon, Sparkles, Sun, X } from "lucide-react";
 
 import { BentoCard } from "../components/BentoCard";
 import { ContactCard } from "../components/ContactCard";
@@ -126,7 +126,7 @@ function SignalBackdrop() {
   );
 }
 
-function NavBar() {
+function NavBar({ theme, onToggle }: { theme: "dark" | "light"; onToggle: () => void }) {
   return (
     <header className="sticky top-4 z-40">
       <div className="glass border-gradient mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-full border border-stroke/70 px-4 py-3 shadow-soft">
@@ -134,7 +134,7 @@ function NavBar() {
           <span className="h-2 w-2 rounded-full bg-accent" />
           Merveille Yomba | Signal & IA
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-200">
+                <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-200">
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -147,14 +147,15 @@ function NavBar() {
               {link.label}
             </a>
           ))}
-          <a
-            href="/CV_Merveille_YOMBA.pdf"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-accent px-3 py-2 text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-magenta"
+          <button
+            type="button"
+            onClick={onToggle}
+            className="inline-flex items-center gap-2 rounded-full border border-stroke/70 bg-slate-900/60 px-3 py-2 text-sm font-semibold text-ink transition hover:border-accent hover:text-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+            aria-label="Basculer le th?me"
           >
-            CV
-          </a>
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {theme === "dark" ? "Light" : "Dark"}
+          </button>
         </div>
       </div>
     </header>
@@ -280,7 +281,7 @@ function Hero({ onOpenPhoto }: { onOpenPhoto: () => void }) {
             </motion.a>
             <motion.a
               variants={item}
-              className="glitch-hover inline-flex items-center gap-2 rounded-full border border-accent bg-slate-900/60 px-5 py-3 text-sm font-semibold text-accent transition hover:bg-accent/10 hover:border-accent hover:text-accent"
+              className="glitch-hover inline-flex items-center gap-2 rounded-full border border-accent bg-slate-900/60 px-5 py-3 text-sm font-semibold text-accent transition hover:bg-accent/10 hover:border-accent hover:text-accent hover:shadow-magenta focus:outline-none focus:ring-2 focus:ring-magenta/30"
               href="mailto:merveilleroseyomba@gmail.com"
             >
               <Mail className="h-4 w-4" />
@@ -340,10 +341,30 @@ function Metric({ label, value }: { label: string; value: string }) {
 
 export default function Page() {
   const [photoOpen, setPhotoOpen] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("theme-pref") : null;
+    const next = saved === "light" || saved === "dark" ? saved : "dark";
+    setTheme(next as "dark" | "light");
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-theme", next);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+    if (typeof window !== "undefined") {
+      localStorage.setItem("theme-pref", theme);
+    }
+  }, [theme]);
+
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-16 px-4 pb-16 pt-10 md:px-8">
-      <NavBar />
+      <NavBar theme={theme} onToggle={() => setTheme(theme === "dark" ? "light" : "dark")} />
 
       <section id="visual" className="space-y-3">
         <WaveCanvas className="shadow-soft" />
@@ -426,6 +447,14 @@ export default function Page() {
     </main>
   );
 }
+
+
+
+
+
+
+
+
 
 
 
